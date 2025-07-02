@@ -1,0 +1,45 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Model and pickle files
+*.pkl
+
+# Logs
+*.log
+
+# CSVs and data
+datasets/book/*.csv
+datasets/movie/*.csv
+
+# Images (optional — if generated dynamically)
+# *.png
+
+# VSCode settings (optional, for local settings)
+.vscode/
+
+# Environment and package management
+*.env
+*.egg-info/
+Pipfile.lock
+poetry.lock
+
+# Output directories (optional — if using ML training)
+runs/
+outputs/
+checkpoints/
+
