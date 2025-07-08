@@ -9,6 +9,9 @@ app = Flask(__name__)
 def home():
     return "Welcome to the SujhavMitra!"
 
+from controller.book_recommend_controller import book_recommend_controller
+from controller.movie_recommend_controller import movie_recommend_controller
+
 # main driver function
 if __name__ == '__main__':
 

@@ -1,4 +1,3 @@
-
 # SujhavMitra – Flask Backend
 
 This is the backend server for SujhavMitra built using Flask.  
@@ -44,6 +43,10 @@ pip install -r requirements.txt
 
 ```bash
 python app.py
+
+or
+
+flask run
 ```
 
 The server will start at:  
