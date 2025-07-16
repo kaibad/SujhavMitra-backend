@@ -1,4 +1,5 @@
 import pickle
+from flask import make_response
 
 class BookRecommendModel:
     def __init__(self):
@@ -16,7 +17,24 @@ class BookRecommendModel:
         self.book_index_titles = list(self.book_user_matrix.index.str.lower().str.strip())
 
     def get_popular_book_title(self):
-        return self.popbooks["Book-Title"].tolist()
+        popular_titles = self.popbooks["Book-Title"].unique()[:15]
+        popular_books_info = []
+        for title in popular_titles:
+            book_info = self.books[self.books["Book-Title"] == title].drop_duplicates("Book-Title")
+
+             # If book info exists, add its details to the list
+            if not book_info.empty:
+                popular_books_info.append({
+                    "title": book_info["Book-Title"].values[0],
+                    "author": book_info["Book-Author"].values[0],
+                    "isbn": book_info["ISBN"].values[0],
+                    "publishdate": book_info["Year-Of-Publication"].values[0],
+                    "publisher": book_info["Publisher"].values[0],
+                    "imageurl": book_info["Image-URL-L"].values[0]
+                })
+
+        return make_response({"popular_books": popular_books_info},200)
+
 
     def book_recommend_model(self, title):
         norm_title = title.strip().lower()
@@ -45,4 +63,4 @@ class BookRecommendModel:
                     "imageurl":book_info["Image-URL-L"].values[0]
                 })
 
-        return {"recommendations": recommendations}
+        return make_response({"recommendations": recommendations},200)
