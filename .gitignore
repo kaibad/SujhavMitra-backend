@@ -12,6 +12,7 @@ venv/
 ENV/
 env/
 .venv/
+.env
 
 # OS files
 .DS_Store
