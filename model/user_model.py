@@ -18,6 +18,7 @@ class user_model():
             print(f"Error connecting to database: {e}")
             self.conn = None
 
+    # user Get Model: this is for the admin to manage users through dashboard
     def all_user_model(self):
         if not self.conn:
             return {"error": "Database connection not established."}
@@ -48,3 +49,66 @@ class user_model():
             return make_response({"message": "User signed up successfully."}, 201)
         except Exception as e:
             return {"error": str(e)}
+    
+    # user Update Model
+    def update_user_model(self, user_data):
+        if not self.conn:
+            return {"error": "Database connection not established."}
+
+        if 'id' not in user_data:
+            return make_response({"error": "User ID is required for update."}, 400)
+
+        try:
+            cursor = self.conn.cursor()
+            user_id = user_data['id']
+
+            fields = []
+            values = []
+
+            for key, value in user_data.items():
+                if key != "id":
+                    fields.append(f"{key} = %s")
+                    values.append(value)
+
+            if not fields:
+                cursor.close()
+                return make_response({"message": "Nothing to update."}, 204)
+
+            query = f"UPDATE sm_users SET {', '.join(fields)} WHERE id = %s"
+            values.append(user_id)  # Add user_id for WHERE clause
+
+            cursor.execute(query, tuple(values))
+            self.conn.commit()
+            rowcount = cursor.rowcount
+            cursor.close()
+
+            if rowcount > 0:
+                return make_response({"message": "Updated successfully."}, 201)
+            else:
+                return make_response({"message": "No rows updated."}, 204)
+
+        except Exception as e:
+            return {"error": str(e)}
+        
+
+    # delete profile method
+    def user_deleteprofile_model(self, id):
+        try:
+            cursor = self.conn.cursor()
+            query = " DELETE FROM sm_users WHERE ID = %s "
+
+            values = (id,)
+            cursor.execute(query, values)
+            affected_rows = cursor.rowcount
+            cursor.close()
+            if affected_rows > 0:
+                return make_response({"message": "User Deleted successfully"}, 200)
+            else:
+                return make_response(
+                    {"message": "Nothing to delete or user not found"}, 202
+                )
+
+        except Exception as e:
+            return {"error": str(e)}
+
+
