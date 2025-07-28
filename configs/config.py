@@ -11,3 +11,5 @@ dbconfig = {
     "password": os.getenv("DB_PASSWORD", ""),
     "database": os.getenv("DB_NAME", "db_sujhavmitra")
 }
+
+JWT_SECRET = os.getenv("JWT_SECRET")
