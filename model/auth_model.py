@@ -28,7 +28,7 @@ class auth_model():
             @wraps(func)
             def inner2(*args, **kwargs):
                 endpoint = request.url_rule.rule
-                # print(endpoint)
+                print(endpoint)
                 #  Get Authorization header
                 authorization = request.headers.get("authorization")
                 

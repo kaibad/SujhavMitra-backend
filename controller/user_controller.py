@@ -19,19 +19,17 @@ def user_signup_controller():
 
 # Update profile controller
 @app.route("/user/updateProfile", methods=["PATCH"])
+@auth_obj.token_auth()
 def patch_user():
     return obj.update_user_model(request.form)
 
 # delete profile controller
 @app.route("/user/deleteprofile/<id>", methods=["DELETE"])
+@auth_obj.token_auth()
 def user_delete_controller(id):
     result = obj.user_deleteprofile_model(id)
     return result
 
 @app.route("/user/login" ,  methods=["POST"])
 def user_login():
-    # auth_data = request.authorization
-
     return obj.user_login_model(request.form)
-
-# obj.user_login_model(auth_data['username'], auth_data['password']
