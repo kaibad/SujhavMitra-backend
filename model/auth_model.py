@@ -1,9 +1,10 @@
+# auth_model.py
 from datetime import datetime, timedelta
 import mysql.connector
 import jwt
-from flask import make_response, request,json
+from flask import make_response, request, json
 import re
-from configs.config import dbconfig,JWT_SECRET
+from configs.config import dbconfig, JWT_SECRET
 from functools import wraps
 
 class auth_model():
@@ -15,10 +16,9 @@ class auth_model():
                 user=dbconfig["username"],
                 password=dbconfig["password"],
                 database=dbconfig["database"],
+                autocommit=True
             )
-            self.conn.autocommit = True
-            print("Connection established")
-            self.cursor = self.conn.cursor(dictionary=True)
+            print("Auth DB Connection established")
         except Exception as e:
             print(f"Error connecting to database: {e}")
             self.conn = None
@@ -27,9 +27,13 @@ class auth_model():
         def inner1(func):
             @wraps(func)
             def inner2(*args, **kwargs):
+                if not self.conn:
+                    return make_response({"ERROR": "DATABASE_CONNECTION_ERROR"}, 500)
+                
                 endpoint = request.url_rule.rule
-                print(endpoint)
-                #  Get Authorization header
+                print(f"Checking auth for endpoint: {endpoint}")
+                
+                # Get Authorization header
                 authorization = request.headers.get("authorization")
                 
                 # Validate Bearer token format
@@ -40,24 +44,28 @@ class auth_model():
                 token = authorization.split(" ")[1]
                 
                 try:
-                    #  Decode JWT token
-                    tokendata  = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+                    # Decode JWT token
+                    tokendata = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
                     current_role = tokendata['payload']['role_id']
                     
+                    # Create cursor for this operation
+                    cursor = self.conn.cursor(dictionary=True)
+                    
                     # Fetch allowed roles for the given endpoint
-                    self.cursor.execute(
+                    cursor.execute(
                         "SELECT role_id FROM accessibility_view WHERE endpoint = %s",
                         (endpoint,),
                     )
-                    rows = self.cursor.fetchall()
+                    rows = cursor.fetchall()
+                    cursor.close()
+                    
                     if not rows:
                         return make_response({"ERROR": "UNKNOWN_ENDPOINT"}, 404)
                     
-                    # Step 6: Extract allowed role IDs
+                    # Extract allowed role IDs
                     allowed_roles = [row["role_id"] for row in rows]
-                    # print(allowed_roles)
-                     
-                    # Step 7: Check if user role is allowed
+                    
+                    # Check if user role is allowed
                     if current_role in allowed_roles:
                         return func(*args, **kwargs)
                     else:
@@ -68,6 +76,7 @@ class auth_model():
                 except jwt.InvalidTokenError:
                     return make_response({"ERROR": "INVALID_TOKEN"}, 401)
                 except Exception as e:
-                    return make_response({"ERROR": str(e)}, 500)
+                    print(f"Token auth error: {e}")
+                    return make_response({"ERROR": "AUTHENTICATION_ERROR"}, 500)
             return inner2
         return inner1
