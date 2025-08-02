@@ -19,8 +19,8 @@ env/
 Thumbs.db
 
 # Model and pickle files
-models/books.pkl
-models/similarity_movies.pkl
+# models/books.pkl
+# models/similarity_movies.pkl
 
 # Logs
 *.log
