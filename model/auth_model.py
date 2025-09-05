@@ -13,7 +13,7 @@ class auth_model():
             self.conn = mysql.connector.connect(
                 host=dbconfig["host"],
                 port=dbconfig["port"],
-                user=dbconfig["username"],
+                user=dbconfig["user"],
                 password=dbconfig["password"],
                 database=dbconfig["database"],
                 autocommit=True
