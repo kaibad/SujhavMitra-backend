@@ -16,3 +16,7 @@ def book_recommend_controller():
     result=recommender.book_recommend_model(title)
 
     return result
+
+@app.route("/book/<isbn>", methods=["GET"])
+def get_book_by_isbn_controller(isbn):
+    return recommender.get_book_by_isbn(isbn)

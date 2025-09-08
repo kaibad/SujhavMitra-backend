@@ -64,3 +64,19 @@ class BookRecommendModel:
                 })
 
         return make_response({"recommendations": recommendations},200)
+    
+    def get_book_by_isbn(self, isbn):
+        book_info = self.books[self.books["ISBN"] == isbn].drop_duplicates("Book-Title")
+        if book_info.empty:
+            return make_response({"error": "Book not found"}, 404)
+
+        book = {
+            "title": book_info["Book-Title"].values[0],
+            "author": book_info["Book-Author"].values[0],
+            "isbn": book_info["ISBN"].values[0],
+            "publishdate": book_info["Year-Of-Publication"].values[0],
+            "publisher": book_info["Publisher"].values[0],
+            "imageurl": book_info["Image-URL-L"].values[0]
+        }
+
+        return make_response(book, 200)
